@@ -61,8 +61,12 @@ const postLogin = async (req, res) => {
 
 // Render register page
 const getRegister = (req, res) => {
-  res.render('pages/register', { formData: req.body || {} });
+  res.render('pages/register', {
+    errors: [],
+    formData: {} // if you use this in your form
+  });
 };
+
 
 // Handle registration POST
 const postRegister = async (req, res) => {

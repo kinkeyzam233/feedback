@@ -7,9 +7,9 @@ const db = pgp({
   database: process.env.DB_NAME || 'Feedback-system',
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || 'kinleyzam',
-  ssl: {
-    rejectUnauthorized: false
-  }
+  // ssl: {
+  //   rejectUnauthorized: false
+  // }
  });
 
 module.exports = db;
