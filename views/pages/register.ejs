@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Register - Feedback System</title>
+  <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('image/college.JPG') no-repeat center center;
+            background-size: cover;
+            filter: blur(8px);
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 32, 0.7);
+            z-index: 1;
+        }
+
+        .signup-container {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2em;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .name-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        input {
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus {
+            outline: 2px solid #1e3799;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        button[type="submit"] {
+            background: #1e3799;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background: #0c2461;
+        }
+
+        .links {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: rgba(30, 55, 153, 0.9);
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+  <div class="signup-container">
+    <h2>Create Account</h2>
+
+    <% if (errors && errors.length > 0) { %>
+      <div class="message">
+        <% errors.forEach(error => { %>
+          <p><%= error %></p>
+        <% }) %>
+      </div>
+    <% } %>
+
+        <form action="/register" method="POST" id="signupForm">
+            <input type="hidden" name="role" value="student" />
+            <div class="name-group">
+                <input
+                    type="text"
+                    name="firstName"
+                    placeholder="First Name"
+                    required
+                    value="<%= formData ? formData.firstName : '' %>"
+                />
+                <input
+                    type="text"
+                    name="lastName"
+                    placeholder="Last Name"
+                    required
+                    value="<%= formData ? formData.lastName : '' %>"
+                />
+            </div>
+            <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                required
+                value="<%= formData ? formData.email : '' %>"
+            />
+            <input
+                type="password"
+                name="password"
+                placeholder="Create Password"
+                required
+            />
+            <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                required
+            />
+            <button type="submit">Create Account</button>
+        </form>
+
+    <div class="links">
+      <a href="/login">Already have an account? Login</a>
+    </div>
+  </div>
+</body>
+</html>

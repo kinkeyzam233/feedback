@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verify Login - College Feedback System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background-image: url('/image/college.JPG');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 0;
+        }
+
+        .verify-container {
+            position: relative;
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            height: 60px;
+            width: auto;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: white;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        p {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .verification-code {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .verification-code input {
+            width: 50px;
+            height: 60px;
+            text-align: center;
+            font-size: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .verification-code input:focus {
+            outline: none;
+            border-color: #1e3799;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .message {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+        }
+
+        .message.success {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #1e3799;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0c2461;
+        }
+
+        .resend {
+            text-align: center;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .resend button {
+            background: none;
+            border: none;
+            color: #3498db;
+            font-size: 14px;
+            padding: 0;
+            margin-left: 5px;
+            font-weight: normal;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .resend button:hover {
+            color: #2980b9;
+        }
+
+        .timer {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .verify-container {
+                margin: 20px;
+                padding: 30px;
+            }
+
+            .verification-code input {
+                width: 40px;
+                height: 50px;
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="verify-container">
+        <div class="logo-container">
+            <img src="/image/logo.png" alt="Logo" />
+            <h2>Email Verification</h2>
+        </div>
+
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="message error"><%= error %></div>
+        <% } %>
+
+        <p>We've sent a verification code to your email address. Please enter the code below to verify your account and complete the registration process.</p>
+
+        <form action="/verify" method="POST" id="verifyForm">
+            <div class="verification-code">
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off" />
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off" />
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off" />
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off" />
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off" />
+                <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" required autocomplete="off" />
+            </div>
+            <input type="hidden" name="code" id="verificationCode" />
+            <button type="submit">Verify</button>
+        </form>
+
+        <div class="resend">
+            Didn't receive the code?
+            <button type="button" id="resendButton" onclick="resendCode()">Resend</button>
+        </div>
+        <div class="timer" id="timer"></div>
+    </div>
+
+    <script>
+        // Handle input fields
+        const inputs = document.querySelectorAll('.verification-code input');
+        const form = document.getElementById('verifyForm');
+        const hiddenInput = document.getElementById('verificationCode');
+
+        inputs.forEach((input, index) => {
+            // Auto-focus next input
+            input.addEventListener('input', function() {
+                if (this.value.length === 1) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                }
+            });
+
+            // Handle backspace
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Backspace' && !this.value) {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
+        });
+
+        // Handle form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const code = Array.from(inputs).map(input => input.value).join('');
+            hiddenInput.value = code;
+            this.submit();
+        });
+
+        // Timer functionality
+        let timeLeft = 300; // 5 minutes in seconds
+        const timerDisplay = document.getElementById('timer');
+        const resendButton = document.getElementById('resendButton');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = `Resend code in ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                timerDisplay.style.display = 'none';
+                resendButton.disabled = false;
+            }
+            timeLeft--;
+        }
+
+        let timerInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Handle resend
+        function resendCode() {
+            fetch('/resend-code', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    timeLeft = 300;
+                    timerDisplay.style.display = 'block';
+                    resendButton.disabled = true;
+                    timerInterval = setInterval(updateTimer, 1000);
+                }
+            });
+        }
+    </script>
+</body>
+</html> 
